@@ -28,6 +28,13 @@ CMAIN:
     ;sub //
     ; 메모리끼리의 연산은 안됨
     
+    ; mul : 곱하기
+    ; mul bl => ax = al * bl
+    ; 계산은 al하고 bl에서 하는데 연산 결과는 뜬금없이 ax에다가 저장함
+    
+    ; div : 나누기
+    ; div bl => ax / bl
+    ; 연산 결과는 al(몫), ah(나머지)에 각각 저장
     
     xor rax, rax
     ret
