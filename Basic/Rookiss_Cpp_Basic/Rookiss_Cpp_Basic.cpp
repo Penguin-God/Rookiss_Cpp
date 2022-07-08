@@ -31,38 +31,46 @@ enum MonsterType {
     Skeleton,
 };
 
-struct ObjectInfo // 구조체는 별 거 없음
+struct StatInfo
 {
-
+    int hp;
+    int attack;
+    int defence;
 };
 
+#pragma region TextRPG Data
 void EnterLobby();
 
-void SelectJob();
-bool CreateJob();
-void SetPlayerInfo(int hp, int attack, int defence);
+StatInfo SelectJob();
+StatInfo CreateJob(int jobNumber);
+StatInfo SetPlayerInfo(int hp, int attack, int defence);
 string GetJobText(JobType type);
 
-void EnterField();
-void ShowPlayerInfo();
-void PrintMonsterInfo();
-void CreateRandomMonster();
-void SetMonsterInfo(int hp, int attack, int defence);
+void EnterField(StatInfo* player);
+void CreateRandomMonster(StatInfo* monsterStat);
+void SetMonsterInfo(StatInfo* monsterStat, int hp, int attack, int defence);
 string GetMonsterText(MonsterType type);
 
-void EnterBattle();
+bool EnterBattle(StatInfo* player, StatInfo* monster);
 
+void PrintStatInfo(const StatInfo& stat);
 void PrintLine();
 
+#pragma endregion
 
-int _hp;
-int _attack;
-int _defence;
+int* ReturnPointer() {
+    int a = 1;
+    return &a;
+}
 
-MonsterType monsterType;
-int _monsterHp;
-int _monsterAttack;
-int _monsterDefence;
+void PointerTest() {
+    int aa[300] = {};
+    aa[95] = 0xAAAAAAAA;
+}
+
+void SetMessage(const char** msg) {
+    *msg = "Bye"; // Bye를 메모리 어딘가에 만들고 시작 주소를 msg에 대입함
+}
 
 int main()
 {
@@ -140,7 +148,71 @@ int main()
 
     srand(time(0)); // 진짜 랜덤값을 얻기 위한 시드값 설정
     // TextRPG
-    // EnterLobby();
+    //EnterLobby();
+    
+    // 포인터
+    int number = 0;
+    int* ptr = &number;
+
+    // 참조
+    int& numberRef = number;
+    // 어셈블리어 관전에서는 그냥 포인터랑 토씨하나 한틀리고 똑같음.
+    // C++ 관점에서는 number라는 바구니에 또 다른 이름을 부여한 것
+    numberRef = 3; // number에 3을 대입함
+    // 값 전달처럼 사용하되 내부는 주소 전달처럼 사용되는 2개의 중간점에 있는 방식
+
+    ptr = nullptr;
+    // 포인터는 nullptr 즉 빈 값을 가질 수 있어서 특정 값을 찾지 못하는 등의 실패를 정의할 수 있음
+    // 참조는 무조건 가르키는 값이 유효해야 하기에 null체크를 하지 못함
+    // null체크를 해야 할 때는 포인터 아니면 참조를 쓰는 등, 상황에 따라 쓰는 게 좋은 듯.
+
+
+    // 배열
+    // .data 주소[H][e][l][l][o][][W][o][r][l][d][\0]
+    // string1 에는 8바이트짜리 주소만 들어감
+    const char* string1 = "Hello Wolrd";
+
+    // [][][][][][[][][][][][]
+    // [H][e][l][l][o][][W][r][][][][]
+    // [H][e][l][l][o][][W][o][r][l][d][\0]
+    // 배열은 바구니가 아니라 닭장. 그 자체로 같은 데이터끼리 붙어있는 바구니의 모음임
+    // 다만 배열 이름은 '바구니 모음'의 시작 주소
+    const char string2[] = "Hello Wolrd";
+
+
+    // 다중 포인터
+    // main([매개변수][반환주소][지역변수(msg<-Hello World의 시작 주소)]) SetMessage([매개변수(a<-Hello World의 시작 주소)][반환주소][지역변수])
+    // SetMessage([매개변수(a <-Bye의 주소가 들어감)][반환주소][지역변수])
+    // 포인터도 변수이므로 값 전달이 됨. 즉, 포인터가 가지고 있는 주솟값이 바꿘다고 아무 일도 일어나지 않음
+    const char* msg = "Hello Wolrd";
+
+    // 주소가 2겹으로 있는 느낌. 1번 주소를 타고 가면 2번 주소가 있고 2번 주소를 타고가야 값이 있는
+    // *이 없어질때까지 까야하는 양파같은 느낌?으로 이해하면 된다고 루키스가 말함
+    //const char** pp = &msg;
+    //*pp = "Bye";
+
+    // msg의 주소 즉, 포인터 변수의 주소를 줌.
+    // 원래는 포인터 변수를 값 전달해서 원본에 접근하지 못한 건데 그럼 포인터 변수의 주소를 주면?
+    // 그럼 그 주소로 포인터 변수에 접근해서 새로운 문자열의 주소를 넣으면?
+    // 깔끔하게 문자열이 바뀜
+    // 즉. 포인터를 변수로 바라보면 이해가 좀 더 쉬움. 다중 포인터는 양파고
+    SetMessage(&msg);
+    cout << msg << endl;
+
+    // 다차원 배열
+    // 메모리 상에서는 다차원이나 일차원이나 똑같다.
+    int arrays[2][5] = {};
+    int test_array[10] = {};
+
+    // 포인터 정리
+    // 포인터란? : 주소를 담는 바구니. 진퉁은 저 멀리 어딘가 있는데 그 곳으로 워프하기 위한 포탈 역할
+    // 배열 : 진짜임. 이름이 시작주소긴 하지만 찐퉁을 들고 있음.
+    // 포인터와 배열은 문법이 서로 호환이 잘 되지만 그냥 서로 다른 놈들임.
+    // 포인터는 크기가 고정이고 배열은 끝도 없이 커질 수 있음.
+
+    int* ptrA = ReturnPointer();
+    PointerTest();
+    cout << *ptrA << endl;
 }
 
 #pragma region TextRPG
@@ -149,25 +221,27 @@ void EnterLobby() {
     {
         PrintLine();
         cout << "로비에 오신 것을 환영합니다" << endl;
-        SelectJob();
+        // [result를 담을 temp를 매개변수로 push] [지역변수 result생성] [temp에 resul복사] [player에 temp복사]
+        StatInfo Player = SelectJob();
 
         PrintLine();
         cout << "(1) 필드 입장 (2) 게임 종료" << endl;
         PrintLine();
         int input;
         cin >> input;
-        if (input == 1) EnterField();
+        if (input == 1) EnterField(&Player);
         else return;
     }
 }
 
-void EnterField() {
+void EnterField(StatInfo* player) {
     while (true)
     {
         PrintLine();
         cout << "필드에 입장했습니다." << endl;
-        ShowPlayerInfo();
-        CreateRandomMonster();
+        PrintStatInfo(*player);
+        StatInfo monster;
+        CreateRandomMonster(&monster);
 
         cout << "싸우시겠습니까?" << endl;
         cout << "(1) 싸움 (2) 도망" << endl;
@@ -176,69 +250,65 @@ void EnterField() {
         cout << ">>";
 
         if (input == 1) {
-            EnterBattle();
-            if (_hp <= 0) return;
+            if (EnterBattle(player, &monster)) cout << "승리!!" << endl;
+            else {
+                cout << "패배!!" << endl;
+                return;
+            }
         }
         else return;
     }
 }
 
-void EnterBattle() {
+bool EnterBattle(StatInfo* player, StatInfo* monster) {
     while (true)
     {
-        int playerDamage = (_attack > _monsterDefence) ? _attack - _monsterDefence : 0;
-        _monsterHp = (_monsterHp > playerDamage) ? _monsterHp - playerDamage : 0;
+        int playerDamage = (player->attack > monster->defence) ? player->attack - monster->defence : 0;
+        monster->hp = (monster->hp > playerDamage) ? monster->hp - playerDamage : 0;
+        cout << "몬스터 남은 체력" << monster->hp << endl;
+        if (monster->hp <= 0) return true;
 
-        cout << "몬스터 남은 체력" << _monsterHp << endl;
-        if (_monsterHp <= 0) {
-            cout << "몬스터를 처치했습니다." << endl;
-            return;
-        }
-
-        int monsterDamage = (_monsterAttack > _defence) ? _monsterAttack - _defence : 0;
-        _hp = (_hp > monsterDamage) ? _hp - monsterDamage : 0;
-
-        cout << "플레이어 남은 체력" << _monsterHp << endl;
-        if (_hp <= 0) {
-            cout << "사망했습니다." << endl;
-            return;
-        }
+        int monsterDamage = (monster->attack > player->defence) ? monster->attack - player->defence : 0;
+        player->hp = (player->hp > monsterDamage) ? player->hp - monsterDamage : 0;
+        cout << "플레이어 남은 체력" << monster->hp << endl;
+        if (player->hp <= 0) return false;
     }
 }
 
-void SelectJob() {
+StatInfo SelectJob() {
     PrintLine();
 
     while (true) {
         cout << "직업을 골라주세요" << endl;
         cout << "(1) 기사 (2) 궁수 (3) 법사" << endl;
         cout << ">>";
-
-        if (CreateJob())
-            break;
+        int jobNumber;
+        cin >> jobNumber;
+        if (jobNumber < 1 || jobNumber > 3) continue;
+        
+        return CreateJob(jobNumber);
     }
 }
 
-bool CreateJob() {
-    int jobNumber;
-    cin >> jobNumber;
-    if (jobNumber < 1 || jobNumber > 3) return false;
+StatInfo CreateJob(int jobNumber) {
     JobType type = (JobType)jobNumber;
 
     cout << GetJobText(type) << " 생성 중...." << endl;
     switch (type)
     {
-    case Knight: SetPlayerInfo(150, 10, 5); return true;
-    case Archer: SetPlayerInfo(100, 15, 3); return true;
-    case Mage: SetPlayerInfo(80, 25, 0); return true;
+        case Knight: return SetPlayerInfo(150, 10, 5);
+        case Archer: return SetPlayerInfo(100, 15, 3);
+        case Mage: return SetPlayerInfo(80, 25, 0);
     }
-    return false;
+    return SetPlayerInfo(0, 0, 0);
 }
 
-void SetPlayerInfo(int hp, int attack, int defence) {
-    _hp = hp;
-    _attack = attack;
-    _defence = defence;
+StatInfo SetPlayerInfo(int hp, int attack, int defence) {
+    StatInfo result;
+    result.hp = hp;
+    result.attack = attack;
+    result.defence = defence;
+    return result;
 }
 
 string GetJobText(JobType type) {
@@ -250,30 +320,27 @@ string GetJobText(JobType type) {
     }
 }
 
-void ShowPlayerInfo() {
-    cout << "Hp : " << _hp << " / Attack : " << _attack << " / Defence : " << _defence << endl;
+
+void PrintStatInfo(const StatInfo& stat) {
+    cout << "Hp : " << stat.hp << " / Attack : " << stat.attack << " / Defence : " << stat.defence << endl;
 }
 
-void PrintMonsterInfo() {
-    cout << "Hp : " << _monsterHp << " / Attack : " << _monsterAttack << " / Defence : " << _monsterDefence << endl;
-}
-
-void CreateRandomMonster() {
-    monsterType = (MonsterType)Random(1, 4);
+void CreateRandomMonster(StatInfo* monsterStat) {
+    MonsterType monsterType = (MonsterType)Random(1, 4);
     cout << GetMonsterText(monsterType) << " 생성 중....";
     switch (monsterType)
     {
-    case Slime: SetMonsterInfo(15, 5, 0); break;
-    case Orc: SetMonsterInfo(40, 10, 3); break;
-    case Skeleton: SetMonsterInfo(80, 15, 5); break;
+        case Slime: SetMonsterInfo(monsterStat, 15, 5, 0); break;
+        case Orc: SetMonsterInfo(monsterStat, 40, 10, 3); break;
+        case Skeleton: SetMonsterInfo(monsterStat, 80, 15, 5); break;
     }
-    PrintMonsterInfo();
+    PrintStatInfo(*monsterStat);
 }
 
-void SetMonsterInfo(int hp, int attack, int defence) {
-    _monsterHp = hp;
-    _monsterAttack = attack;
-    _monsterDefence = defence;
+void SetMonsterInfo(StatInfo* monsterStat, int hp, int attack, int defence) {
+    monsterStat->hp = hp;
+    monsterStat->attack = attack;
+    monsterStat->defence = defence;
 }
 
 string GetMonsterText(MonsterType type) {

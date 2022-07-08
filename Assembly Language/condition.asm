@@ -33,11 +33,11 @@ CMAIN:
 LABEL_HI:
     mov rcx, 1
 notEquals:
-    PRINT_HEX 1, rcx
-    NEWLINE
+    ;PRINT_HEX 1, rcx
+    ;NEWLINE
 
     ; 연습문제 : 어떤 숫자가 짝수면 1, 홀수면 0을 출력하는 프로그램
-    mov ax, 15
+    mov ax, 14
     mov bl, 2
     div bl
     
