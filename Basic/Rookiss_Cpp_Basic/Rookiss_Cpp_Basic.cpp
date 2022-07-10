@@ -21,7 +21,7 @@ void Hi(int a) {
     a++;
 }
 
-#pragma region TextRPG Data
+#pragma region TextRPG .h
 
 enum JobType {
     Knight = 1,
@@ -63,14 +63,17 @@ int InputNumber(const char* msg);
 #pragma endregion
 
 
-int* ReturnPointer() {
-    int a = 1;
-    return &a;
+StatInfo* ReturnStat() {
+    StatInfo stat;
+    stat.hp = 0x11111111;
+    stat.attack = 200;
+    stat.defence = 200;
+    return &stat;
 }
 
-void PointerTest() {
+void ArrayTask() {
     int aa[300] = {};
-    aa[95] = 0xAAAAAAAA;
+    // 배열가지고 어떤 작업을 함
 }
 
 void SetMessage(const char** msg) {
@@ -210,22 +213,29 @@ void Pointer() {
     // 포인터와 배열은 문법이 서로 호환이 잘 되지만 그냥 서로 다른 놈들임.
     // 포인터는 크기가 고정이고 배열은 끝도 없이 커질 수 있음.
 
-    int* ptrA = ReturnPointer();
+    /*int* ptrA = ReturnPointer();
     PointerTest();
-    cout << *ptrA << endl;
+    cout << *ptrA << endl;*/
 }
 
 
 int main()
 {
     srand(time(0)); // 진짜 랜덤값을 얻기 위한 시드값 설정
+
     // TextRPG
     // EnterLobby();
 
-    Snail();
+    //Snail();
+
+    StatInfo* ptr = ReturnStat();
+    ArrayTask();
+    cout << ptr->hp << endl;
+    cout << ptr->attack << endl;
+    cout << ptr->defence << endl;
 }
 
-#pragma region TextRPG
+#pragma region TextRPG .cpp
 void EnterLobby() {
     while (true)
     {
