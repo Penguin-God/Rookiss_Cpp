@@ -1,8 +1,10 @@
 ﻿#include <iostream> // iostream 파일을 복붙함
 #include <algorithm>
 #include <iterator>
+#include <windows.h>
+#include "Snail.h"
 using namespace std;
-using std::string; using std::reverse;
+// using std::string; using std::reverse;
 
 // min부터 max-1까지의 랜덤 정수값 가져오는 함수
 int Random(int min, int max) {
@@ -18,6 +20,8 @@ int global = 2;
 void Hi(int a) {
     a++;
 }
+
+#pragma region TextRPG Data
 
 enum JobType {
     Knight = 1,
@@ -38,25 +42,26 @@ struct StatInfo
     int defence;
 };
 
-#pragma region TextRPG Data
 void EnterLobby();
 
 StatInfo SelectJob();
 StatInfo CreateJob(int jobNumber);
-StatInfo SetPlayerInfo(int hp, int attack, int defence);
-string GetJobText(JobType type);
+StatInfo SetStat(int hp, int attack, int defence);
+const char* GetJobText(JobType type);
 
 void EnterField(StatInfo* player);
 void CreateRandomMonster(StatInfo* monsterStat);
-void SetMonsterInfo(StatInfo* monsterStat, int hp, int attack, int defence);
-string GetMonsterText(MonsterType type);
+void CreateRandomMonsters(StatInfo monsters[], int count);
+void SetStat(StatInfo* stat, int hp, int attack, int defence);
+const char* GetMonsterText(MonsterType type);
 
 bool EnterBattle(StatInfo* player, StatInfo* monster);
 
-void PrintStatInfo(const StatInfo& stat);
-void PrintLine();
-
+void PrintStatInfo(const char* name, const StatInfo& stat);
+void PrintMessage(const char* msg);
+int InputNumber(const char* msg);
 #pragma endregion
+
 
 int* ReturnPointer() {
     int a = 1;
@@ -72,9 +77,7 @@ void SetMessage(const char** msg) {
     *msg = "Bye"; // Bye를 메모리 어딘가에 만들고 시작 주소를 msg에 대입함
 }
 
-int main()
-{
-#pragma region 기초 문법
+void 기초문법() {
     // 어셈블리어 관점에서 보면 초깃값이 있다면 .data영역으로
     // 초깃값이 0이거나 없다면 .bss영역에서 저장함
     // 근데 몰라도 됨. 거의 다 모름
@@ -140,16 +143,13 @@ int main()
         else if (randNum == 2) count2++;
         else if (randNum == 3) count3++;
     }
-#pragma endregion
 
     // 함수1([매개변수][반환주소값][지역변수])함수2([매개변수][반환주소값][지역변수])
     int local = 2;
     Hi(local);
+}
 
-    srand(time(0)); // 진짜 랜덤값을 얻기 위한 시드값 설정
-    // TextRPG
-    //EnterLobby();
-    
+void Pointer() {
     // 포인터
     int number = 0;
     int* ptr = &number;
@@ -215,48 +215,47 @@ int main()
     cout << *ptrA << endl;
 }
 
+
+int main()
+{
+    srand(time(0)); // 진짜 랜덤값을 얻기 위한 시드값 설정
+    // TextRPG
+    // EnterLobby();
+
+    Snail();
+}
+
 #pragma region TextRPG
 void EnterLobby() {
     while (true)
     {
-        PrintLine();
-        cout << "로비에 오신 것을 환영합니다" << endl;
+        PrintMessage("로비에 오신 것을 환영합니다");
         // [result를 담을 temp를 매개변수로 push] [지역변수 result생성] [temp에 resul복사] [player에 temp복사]
         StatInfo Player = SelectJob();
 
-        PrintLine();
-        cout << "(1) 필드 입장 (2) 게임 종료" << endl;
-        PrintLine();
-        int input;
-        cin >> input;
-        if (input == 1) EnterField(&Player);
+        if (InputNumber("(1) 필드 입장 (2) 게임 종료") == 1) EnterField(&Player);
         else return;
     }
 }
 
 void EnterField(StatInfo* player) {
+    int const MONSTER_COUNT = 2;
     while (true)
     {
-        PrintLine();
         cout << "필드에 입장했습니다." << endl;
-        PrintStatInfo(*player);
-        StatInfo monster;
-        CreateRandomMonster(&monster);
+        PrintStatInfo("플레이어 상태  ", *player);
+        StatInfo monsters[MONSTER_COUNT];
+        CreateRandomMonsters(monsters, MONSTER_COUNT);
 
         cout << "싸우시겠습니까?" << endl;
-        cout << "(1) 싸움 (2) 도망" << endl;
-        int input;
-        cin >> input;
-        cout << ">>";
+        int number = InputNumber("(1) 전투 (2) 전투 (3) 도망");
+        if (number != 1 && number != 2) return;
 
-        if (input == 1) {
-            if (EnterBattle(player, &monster)) cout << "승리!!" << endl;
-            else {
-                cout << "패배!!" << endl;
-                return;
-            }
+        if (EnterBattle(player, &monsters[number-1])) PrintMessage("승리");
+        else {
+            PrintMessage("패배");
+            return;
         }
-        else return;
     }
 }
 
@@ -276,16 +275,11 @@ bool EnterBattle(StatInfo* player, StatInfo* monster) {
 }
 
 StatInfo SelectJob() {
-    PrintLine();
-
     while (true) {
         cout << "직업을 골라주세요" << endl;
-        cout << "(1) 기사 (2) 궁수 (3) 법사" << endl;
-        cout << ">>";
-        int jobNumber;
-        cin >> jobNumber;
+        int jobNumber = InputNumber("(1) 기사 (2) 궁수 (3) 법사");
         if (jobNumber < 1 || jobNumber > 3) continue;
-        
+
         return CreateJob(jobNumber);
     }
 }
@@ -296,14 +290,14 @@ StatInfo CreateJob(int jobNumber) {
     cout << GetJobText(type) << " 생성 중...." << endl;
     switch (type)
     {
-        case Knight: return SetPlayerInfo(150, 10, 5);
-        case Archer: return SetPlayerInfo(100, 15, 3);
-        case Mage: return SetPlayerInfo(80, 25, 0);
+        case Knight: return SetStat(150, 10, 5);
+        case Archer: return SetStat(100, 15, 3);
+        case Mage: return SetStat(80, 25, 0);
     }
-    return SetPlayerInfo(0, 0, 0);
+    return SetStat(0, 0, 0);
 }
 
-StatInfo SetPlayerInfo(int hp, int attack, int defence) {
+StatInfo SetStat(int hp, int attack, int defence) {
     StatInfo result;
     result.hp = hp;
     result.attack = attack;
@@ -311,7 +305,7 @@ StatInfo SetPlayerInfo(int hp, int attack, int defence) {
     return result;
 }
 
-string GetJobText(JobType type) {
+const char* GetJobText(JobType type) {
     switch (type)
     {
     case Knight: return "기사";
@@ -320,9 +314,8 @@ string GetJobText(JobType type) {
     }
 }
 
-
-void PrintStatInfo(const StatInfo& stat) {
-    cout << "Hp : " << stat.hp << " / Attack : " << stat.attack << " / Defence : " << stat.defence << endl;
+void PrintStatInfo(const char* name, const StatInfo& stat) {
+    cout << name << "Hp : " << stat.hp << " / Attack : " << stat.attack << " / Defence : " << stat.defence << endl;
 }
 
 void CreateRandomMonster(StatInfo* monsterStat) {
@@ -330,20 +323,26 @@ void CreateRandomMonster(StatInfo* monsterStat) {
     cout << GetMonsterText(monsterType) << " 생성 중....";
     switch (monsterType)
     {
-        case Slime: SetMonsterInfo(monsterStat, 15, 5, 0); break;
-        case Orc: SetMonsterInfo(monsterStat, 40, 10, 3); break;
-        case Skeleton: SetMonsterInfo(monsterStat, 80, 15, 5); break;
+        case Slime: SetStat(monsterStat, 15, 5, 0); break;
+        case Orc: SetStat(monsterStat, 40, 10, 3); break;
+        case Skeleton: SetStat(monsterStat, 80, 15, 5); break;
     }
-    PrintStatInfo(*monsterStat);
+    PrintStatInfo("", *monsterStat);
 }
 
-void SetMonsterInfo(StatInfo* monsterStat, int hp, int attack, int defence) {
-    monsterStat->hp = hp;
-    monsterStat->attack = attack;
-    monsterStat->defence = defence;
+void CreateRandomMonsters(StatInfo monsters[], int count) {
+    for (int i = 0; i < count; i++) {
+        CreateRandomMonster(&monsters[i]);
+    }
 }
 
-string GetMonsterText(MonsterType type) {
+void SetStat(StatInfo* stat, int hp, int attack, int defence) {
+    stat->hp = hp;
+    stat->attack = attack;
+    stat->defence = defence;
+}
+
+const char* GetMonsterText(MonsterType type) {
     switch (type)
     {
     case Slime: return "슬라임";
@@ -352,7 +351,17 @@ string GetMonsterText(MonsterType type) {
     }
 }
 
-void PrintLine() {
-    cout << "====================" << endl;
+void PrintMessage(const char* msg) {
+    cout << "========================================" << endl;
+    cout << msg << endl;
+    cout << "========================================" << endl;
+}
+
+int InputNumber(const char* msg) {
+    cout << msg << endl;
+    cout << ">>";
+    int result;
+    cin >> result;
+    return result;
 }
 #pragma endregion
