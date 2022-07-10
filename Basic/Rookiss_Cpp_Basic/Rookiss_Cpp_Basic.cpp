@@ -66,8 +66,8 @@ int InputNumber(const char* msg);
 StatInfo* ReturnStat() {
     StatInfo stat;
     stat.hp = 0x11111111;
-    stat.attack = 200;
-    stat.defence = 200;
+    stat.attack = 0x11111111;;
+    stat.defence = 0x11111111;;
     return &stat;
 }
 
