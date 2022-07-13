@@ -62,6 +62,23 @@ void PrintMessage(const char* msg);
 int InputNumber(const char* msg);
 #pragma endregion
 
+<<<<<<< HEAD
+=======
+
+StatInfo* ReturnStat() {
+    StatInfo stat;
+    stat.hp = 0x11111111;
+    stat.attack = 0x11111111;;
+    stat.defence = 0x11111111;;
+    return &stat;
+}
+
+void ArrayTask() {
+    int aa[300] = {};
+    // 배열가지고 어떤 작업을 함
+}
+
+>>>>>>> 2b5888316f2111f770b0f49a5a2c62b699a7059e
 void SetMessage(const char** msg) {
     *msg = "Bye"; // Bye를 메모리 어딘가에 만들고 시작 주소를 msg에 대입함
 }
