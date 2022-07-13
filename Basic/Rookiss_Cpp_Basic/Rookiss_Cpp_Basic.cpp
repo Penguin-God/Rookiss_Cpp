@@ -62,20 +62,6 @@ void PrintMessage(const char* msg);
 int InputNumber(const char* msg);
 #pragma endregion
 
-
-StatInfo* ReturnStat() {
-    StatInfo stat;
-    stat.hp = 0x11111111;
-    stat.attack = 200;
-    stat.defence = 200;
-    return &stat;
-}
-
-void ArrayTask() {
-    int aa[300] = {};
-    // 배열가지고 어떤 작업을 함
-}
-
 void SetMessage(const char** msg) {
     *msg = "Bye"; // Bye를 메모리 어딘가에 만들고 시작 주소를 msg에 대입함
 }
@@ -219,6 +205,35 @@ void Pointer() {
 }
 
 
+// 바인딩(Binding) = 묶는다
+// 정적 바인딩(Static Binding) : 컴파일 시점에 결정
+// 동적 바인딩(Dynamic Binding) : 실행 시점에 결정
+// 일반 함수는 정적 바인딩 사용
+// 가상 함수는 동적 바인딩 사용 : 가상 함수들의 주소의 시작점을 가리키는 vftable이라는 게 있고 거기 가서 원하는 함수를 찾아서 실행시킴
+class Knight {
+public:
+    int _hp;
+    int x;
+
+    // 명시적 사용
+    // 가끔 암시적으로 컴파일러가 난리를 쳐서 선언하는 키워드
+    explicit Knight(int hp) : _hp(100) // 만약 포함하는 클래스일 경우 선처리 영역에 넣어야 됨
+    {
+        x = 0;
+    }
+
+    void Move();
+
+    // ~붙이면 소멸자. 메모리에서 사라질 때 호출
+    ~Knight() {
+
+    }
+
+    void Move() {
+
+    }
+};
+
 int main()
 {
     srand(time(0)); // 진짜 랜덤값을 얻기 위한 시드값 설정
@@ -227,12 +242,6 @@ int main()
     // EnterLobby();
 
     //Snail();
-
-    StatInfo* ptr = ReturnStat();
-    ArrayTask();
-    cout << ptr->hp << endl;
-    cout << ptr->attack << endl;
-    cout << ptr->defence << endl;
 }
 
 #pragma region TextRPG .cpp
