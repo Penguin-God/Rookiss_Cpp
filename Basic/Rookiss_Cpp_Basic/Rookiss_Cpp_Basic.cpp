@@ -3,6 +3,8 @@
 #include <iterator>
 #include <windows.h>
 #include "Snail.h"
+#include "Game.h"
+
 using namespace std;
 // using std::string; using std::reverse;
 
@@ -61,7 +63,6 @@ void PrintStatInfo(const char* name, const StatInfo& stat);
 void PrintMessage(const char* msg);
 int InputNumber(const char* msg);
 #pragma endregion
-
 
 StatInfo* ReturnStat() {
     StatInfo stat;
@@ -219,20 +220,156 @@ void Pointer() {
 }
 
 
+// 바인딩(Binding) = 묶는다
+// 정적 바인딩(Static Binding) : 컴파일 시점에 결정
+// 동적 바인딩(Dynamic Binding) : 실행 시점에 결정
+// 일반 함수는 정적 바인딩 사용
+// 가상 함수는 동적 바인딩 사용 : 가상 함수들의 주소의 시작점을 가리키는 vftable이라는 게 있고 거기 가서 원하는 함수를 찾아서 실행시킴
+// cpp는 class도 그냥 넘기면 복사됨. 꼬우면 포인터로 보내셈
+class Knights {
+public:
+    Knights()
+    {
+        x = 0;
+    }
+
+    int _hp;
+    int x;
+
+    // 명시적 사용
+    // 가끔 암시적으로 컴파일러가 난리를 쳐서 선언하는 키워드
+    //explicit Knight(int hp) : _hp(100) // 만약 포함하는 클래스일 경우 선처리 영역에 넣어야 됨
+    //{
+    //    x = 0;
+    //}
+
+    // ~붙이면 소멸자. 메모리에서 사라질 때 호출
+    //~Knight() {
+
+    //}
+
+    void Move() {
+
+    }
+};
+
+class Item {
+public:
+    Item() {
+        cout << "Item 탄생일" << endl;
+    }
+
+    Item(int a)
+    {
+        cout << "Item 탄생일" << a << endl;
+    }
+
+    ~Item() {
+        cout << "Item 사망일" << endl;
+    }
+
+public:
+    int type = 0;
+    int id = 0;
+    char dummy[4096] = {};
+};
+
+class Weapon : public Item
+{
+public:
+    Weapon()
+    {
+        damage = 0;
+        cout << "Weapon 탄생일" << endl;
+    }
+
+    ~Weapon()
+    {
+        cout << "Weapon 사망일" << endl;
+    }
+public:
+    int damage;
+
+};
+
+class 동적할당 {
+public:
+    // 최근 운영체제는 유저 영역과 커널 영역이 나누어져 있음
+    // 유저 영역 [메모장] [유튜브] [롤]...
+    // ----------------------------------
+    // 커널 영역 (Windows등의 핵심 코드)
+
+    // 메모리 할당 과정
+    // 유저) API(함수)를 이용해 커널에 요청
+    // 커널) 메모리를 할당해서 갖다 줌
+    // 유저) 잘 갖다가 씀
+
+    void Malloc() {
+        // 사이즈를 주면 그 크기만큼 메모리 잡은 후에 시작 주소를 void형 포인터로 반환함
+        void* p = malloc(1);
+        // void*란? malloc은 메모리를 잡아주는 역할이지 메모리 무슨 목적으로 쓸지는 모르기 때문에 void로 반환하고 그걸 잘 바꿔서 쓰면 됨.
+        int* p2 = (int*)malloc(sizeof(int));
+        *p2 = 3;
+        cout << *p2 << endl;
+        p2 = nullptr;
+        // free : 다 쓰면 포인터는 자유에요~
+        free(p2);
+        // free가 포인터도 날린건 아니기 때문에 free후에도 포인터에 접근할 수 있다.
+        // 놀랍게도 크래쉬가 안나고 스무스하게 넘어가기 때문에 사실상 재앙과도 같은 수준의 버그다.
+        // 그럼 free를 하지말자! -> 이지랄하면 메모리 누수남
+        // 그냥 주의해서 써야 함. 아님 nullptr로 밀거나
+        cout << *p2 << endl;
+    }
+
+    // cpp에서 추가된 문법. malloc()처럼 함수가 아니라 연산자 취급임
+    // 또한 클래스일 경우 생성자와 소멸자를 호출해 줌.
+    void New() {
+        Knights* info = new Knights;
+        info->x = 2;
+        delete info;
+
+        Knights* infos = new Knights[3];
+        Knights* info2 = (infos + 1);
+        info2->x = 1;
+        delete[] infos;
+    }
+
+    void Casting() {
+        int a = 123;
+        float b = (float)a;
+        cout << b << endl;
+        // 스택 메모리에 생성
+        // Item item;
+
+        // 스택에는 메모리 주소만 저장하고 본체는 힙 메모리에 생성
+        // Item* item2 = new Item();
+        
+        // Weapon weapon;
+        //Weapon* weapon2 = new Weapon();
+        //delete weapon2;
+
+        Item item3(1);
+    }
+
+    void IncreaseId(Item item)
+    {
+        item.id++;
+    }
+};
+
+
+
 int main()
 {
     srand(time(0)); // 진짜 랜덤값을 얻기 위한 시드값 설정
 
-    // TextRPG
-    // EnterLobby();
-
     //Snail();
 
-    StatInfo* ptr = ReturnStat();
-    ArrayTask();
-    cout << ptr->hp << endl;
-    cout << ptr->attack << endl;
-    cout << ptr->defence << endl;
+    Game game;
+    while (true)
+    {
+
+    }
 }
 
 #pragma region TextRPG .cpp
