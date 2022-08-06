@@ -139,10 +139,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Creature.cpp" />
+    <ClCompile Include="Field.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Monster.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Rookiss_Cpp_Basic.cpp" />
     <ClCompile Include="Snail.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Creature.h" />
+    <ClInclude Include="Field.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="Monster.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Snail.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

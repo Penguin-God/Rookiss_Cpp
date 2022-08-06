@@ -3,6 +3,8 @@
 #include <iterator>
 #include <windows.h>
 #include "Snail.h"
+#include "Game.h"
+
 using namespace std;
 // using std::string; using std::reverse;
 
@@ -361,13 +363,13 @@ int main()
 {
     srand(time(0)); // 진짜 랜덤값을 얻기 위한 시드값 설정
 
-    // TextRPG
-    // EnterLobby();
-
     //Snail();
 
-    동적할당 t = 동적할당();
-    t.Casting();
+    Game game;
+    while (true)
+    {
+
+    }
 }
 
 #pragma region TextRPG .cpp
