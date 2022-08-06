@@ -20,6 +20,8 @@ public:
         case 2: break;
         }
     }
+
+    virtual void PrintInfo() override;
 public:
     int _playerType;
 };

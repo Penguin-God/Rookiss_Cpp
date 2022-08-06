@@ -17,13 +17,14 @@ public:
 		
 	}
 
-
+	virtual void PrintInfo() override;
 protected:
 	int _monsterType;
 };
 
 class Slime : public Monster
 {
+public:
 	Slime() : Monster(SLIME)
 	{
 		_hp = 50;
@@ -34,6 +35,7 @@ class Slime : public Monster
 
 class Orc : public Monster
 {
+public:
 	Orc() : Monster(ORC)
 	{
 		_hp = 80;
@@ -44,6 +46,7 @@ class Orc : public Monster
 
 class Skeleton : public Monster
 {
+public:
 	Skeleton() : Monster(SKELETON)
 	{
 		_hp = 100;
