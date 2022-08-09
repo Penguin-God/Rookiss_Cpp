@@ -19,7 +19,12 @@ public:
 
 	}
 
-protected:
+	virtual void PrintInfo() = 0;
+
+	void OnDamaged(Creature* attaker);
+	bool IsDead() { return _hp <= 0; }
+
+public:
 	int _type;
 	int _hp = 0;
 	int _damage = 0;
