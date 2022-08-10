@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <iterator>
 #include <windows.h>
+#include <vector>
+
 #include "Snail.h"
 #include "Game.h"
 
@@ -310,6 +312,79 @@ public:
 };
 
 
+class LamdaItem
+{
+public:
+    int id = 0;
+};
+
+template<typename T> // 그냥 제네릭이었누 ㅋㅋ
+class 콜백함수
+{
+public:
+    int Add(int a, int b)
+    {
+        return a + b;
+    }
+
+    void Callback()
+    {
+        // 함수는 어셈블리어 관점으로 보면 함수가 들고있는 주소로 점프해서 코드 실행하는거임
+        // 반환형(*변수명)(인자값)
+        // 대입할 때는 &함수명
+        // 사용할 때는 일반 함수처럼
+        
+        // 멤버 함수는 class명::*변수명 식으로 선언해야 함
+        // 대입할 때는 &클래스명::함수명
+        // 사용할때는 class인스턴스.*변수명() 식으로 사용
+
+        // ()연산자 오버로딩
+        using Func = int(콜백함수::*)(int, int);
+        int(콜백함수::*fn)(int, int);
+        fn = &콜백함수::Add;
+        Func a;
+        a = &콜백함수::Add;
+        콜백함수 call;
+        int aResult = (call.*a)(1, 2);
+        int result = (call.*fn)(1, 2);
+        cout << result << endl;
+        cout << aResult << endl;
+    }
+
+    void 템플릿()
+    {
+        // 템플릿 : 함수나 클래스를 찍어내는 틀
+    }
+
+    void Lamda()
+    {
+        vector<LamdaItem> v;
+        LamdaItem item;
+        item.id = 7;
+        v.push_back(item);
+
+        LamdaItem item2;
+        item2.id = 3;
+        v.push_back(item2);
+
+        LamdaItem item3;
+        item3.id = 5;
+        v.push_back(item3);
+        // 클로저 = 람다에 의해 만들어진 실행시점 객체
+        // [] 캡처 : 외부에 변수를 갖다 씀
+        // 쓰려는 변수명 하나하나 적는게 좋음.
+        // 기본은 복사 &붙이면 참조
+        int findId = 5;
+        auto items = std::find_if(v.begin(), v.end(), [findId](LamdaItem item) { return item.id == findId; });
+        //[](int a){}
+    }
+};
+
+template<typename T> // 그냥 제네릭이었누 ㅋㅋ
+void TT(T a)
+{
+
+}
 
 int main()
 {
@@ -323,6 +398,7 @@ int main()
     //{
     //    game.Update();
     //}
-
-
+    TT(11);
+    콜백함수<int> call;
+    call.Lamda();
 }
