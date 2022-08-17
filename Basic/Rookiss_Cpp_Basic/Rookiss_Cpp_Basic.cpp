@@ -3,6 +3,7 @@
 #include <iterator>
 #include <windows.h>
 #include <vector>
+#include <list>
 
 #include "Snail.h"
 #include "Game.h"
@@ -311,15 +312,132 @@ public:
     }
 };
 
+
+class LamdaItem
+{
+public:
+    int id = 0;
+};
+
+template<typename T> // 그냥 제네릭이었누 ㅋㅋ
+class 콜백함수
+{
+public:
+    int Add(int a, int b)
+    {
+        return a + b;
+    }
+
+    void Callback()
+    {
+        // 함수는 어셈블리어 관점으로 보면 함수가 들고있는 주소로 점프해서 코드 실행하는거임
+        // 반환형(*변수명)(인자값)
+        // 대입할 때는 &함수명
+        // 사용할 때는 일반 함수처럼
+        
+        // 멤버 함수는 class명::*변수명 식으로 선언해야 함
+        // 대입할 때는 &클래스명::함수명
+        // 사용할때는 class인스턴스.*변수명() 식으로 사용
+
+        // ()연산자 오버로딩
+        using Func = int(콜백함수::*)(int, int);
+        int(콜백함수::*fn)(int, int);
+        fn = &콜백함수::Add;
+        Func a;
+        a = &콜백함수::Add;
+        콜백함수 call;
+        int aResult = (call.*a)(1, 2);
+        int result = (call.*fn)(1, 2);
+        cout << result << endl;
+        cout << aResult << endl;
+    }
+
+    void 템플릿()
+    {
+        // 템플릿 : 함수나 클래스를 찍어내는 틀
+    }
+
+    void Lamda()
+    {
+        vector<LamdaItem> v;
+        LamdaItem item;
+        item.id = 7;
+        v.push_back(item);
+
+        LamdaItem item2;
+        item2.id = 3;
+        v.push_back(item2);
+
+        LamdaItem item3;
+        item3.id = 5;
+        v.push_back(item3);
+        // 클로저 = 람다에 의해 만들어진 실행시점 객체
+        // [] 캡처 : 외부에 변수를 갖다 씀
+        // 쓰려는 변수명 하나하나 적는게 좋음.
+        // 기본은 복사 &붙이면 참조
+        int findId = 5;
+        auto items = std::find_if(v.begin(), v.end(), [findId](LamdaItem item) { return item.id == findId; });
+        //[](int a){}
+    }
+};
+
+
 class STL
 {
 public:
     void Vector()
     {
+        // 백터의 특징
+        // capacity(총 용량)만큼 메모리를 할당함. 이때 실제 메모리보다 좀 더 여유분을 가진다. 여유분이 다 차면 메모리를 증설한다.
+        // capacity는 다 차면 1.5배 정도 증가한다.
+        // 하나씩 늘리지 굳이굳이 힘들게 1.5배씩 늘리는 이유는 당연히 이거 만든 개발자들이 심심해서 그런게 아니다.
+        // 기본적으로 배열이다 보니 데이터가 쭉 있어야 되는데 뒷자리가 먹혀 있으면 넓은 집으로 이사를 간다.
+        // 크면 클수록 이사 비용이 오지게 드므로 어느 정도 절충을 한 결과 1.5배 정도가 적당하다고 판단한 것.
+        // 이때 복사가 많이 되는게 싫으면 초반에 capacity를 정의하고 시작할 수도 있다.
+        
         vector<int> v;
-        v.push_back(1);
+        for (size_t i = 0; i < 10; i++)
+            v.push_back(i);
 
-        cout << v[0] << endl;
+        // iterator : pointer랑 비슷하나 특정 컨테이너를 가르킴
+        vector<int>::iterator itStart = v.begin();
+        vector<int>::iterator itEnd = v.end();
+
+        // v.end()는 쓰레기 값을 뱉음 즉 배열의 마지막 값 바로 다음의 메모리 주소로 저게 나오기 전까지 돌면 백터를 처음부터 끝까지 다 도는 것임
+        // 쓰는 이유 : iterator가 C#의 IEnumerable처럼 모든 템플릿이 가지고 있어서 foreach처럼 범용적인 문범임
+        // C#에서 일반 배열이나 list는 for문이 나을 수 있지만 딕셔너리같은 자료구조는 foreach를 쓰는 것과 같음.
+        for (auto i = v.begin(); i != v.end(); i++)
+            cout << *i << endl;
+
+        // 중간 or 처음 삽입, 삭제 : 다른 데이터들을 다 옮겨야하므로 느림
+        // 마지막 삽입, 삭제 : 끝에 데이터 하나 추가하므로 빠름
+        // 임의 접근 : []로 접근
+    }
+
+    void List()
+    {
+        // 애는 걍 링크드 리스트임 ㅋㅋ
+        // 근데 단일이 아니라 이중임 앞, 뒤 노드 주소를 가지고 있다는 뜻.
+        // [1] <-> [2] <-> [3] <-> [4] <-> [5]
+
+        // 삽입 : 데이터 복사 없이 앞, 뒤 노드의 주소만 바꾸면 됨.
+        // [1] <-> [2] <-> [3] <-> [4] <-> [5] => [1] <-> [2] <-> [20000] <-> [3] <-> [4] <-> [5]
+        // 삭제도 마찬가지로 훌륭하게 동작함
+
+        // 임의접근 : But 이게 장점만 있었으면 List나 vector 안쓰지 ㅋㅋㅋ
+        // 임의접근하려면 처음부터 꾸준히 원하는 index까지 포인터 타고 찾아가야 되서 비용 겁나 듬. 애초에 지원도 안함.
+
+        // 그래서 사실 삽입, 삭제도 주소를 알고 있을때만 빠르지 처음부터 뺑뺑이 돌리면 느림.
+        
+        list<int> li;
+        for (size_t i = 0; i < 6; i++)
+            li.push_back(i);
+
+        li.remove(3);
+        li.insert(++li.begin(), 20031);
+
+        for (auto i = li.begin(); i != li.end(); i++)
+            cout << *i << endl;
     }
 };
 
@@ -329,10 +447,17 @@ int main()
 
     //Snail();
 
-    Game game;
-    game.Init();
-    while (true)
-    {
-        game.Update();
-    }
+    //Game game;
+    //game.Init();
+    //while (true)
+    //{
+    //    game.Update();
+    //}
+    
+    /*콜백함수<int> call;
+    call.Lamda();*/
+
+    STL stl;
+    //stl.Vector();
+    stl.List();
 }
