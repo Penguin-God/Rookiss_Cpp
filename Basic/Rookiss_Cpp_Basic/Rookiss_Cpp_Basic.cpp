@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <iterator>
 #include <windows.h>
+#include <vector>
+
 #include "Snail.h"
 #include "Game.h"
 
@@ -309,7 +311,17 @@ public:
     }
 };
 
+class STL
+{
+public:
+    void Vector()
+    {
+        vector<int> v;
+        v.push_back(1);
 
+        cout << v[0] << endl;
+    }
+};
 
 int main()
 {
