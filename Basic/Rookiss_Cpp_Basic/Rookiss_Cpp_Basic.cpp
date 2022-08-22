@@ -4,6 +4,9 @@
 #include <windows.h>
 #include <vector>
 #include <list>
+#include <deque>
+#include <map>
+#include <algorithm>
 
 #include "Snail.h"
 #include "Game.h"
@@ -200,7 +203,7 @@ public:
 
     // ~붙이면 소멸자. 메모리에서 사라질 때 호출
     //~Knight() {
-
+    //
     //}
 
     void Move() {
@@ -438,6 +441,25 @@ public:
 
         for (auto i = li.begin(); i != li.end(); i++)
             cout << *i << endl;
+    }
+
+    void Deque()
+    {
+        // 발음이 디큐가 아니라 데크임
+        // vector와 list의 반반 : 메모리가 서로 일열로 있다는 보장은 없지만 임의접근 가능
+        // vector는 여유분을 가지고 큰 집으로 이사하는 개념이라면 얘는 그딴거 없이 그냥 아무데나 data를 놔둠
+        // 그래서 push_front()를 하면 0번째 값이 어디 이상한 곳에 혼자 외롭게 떨어져 있을 수도 있음
+        // vector가 전원주택 원툴이라면 얘는 아파트 몇동 몇호처럼 찾아가는 느낌
+        // [1,1,1,1] [1,1,1,1] [1,1,1,1] [1,1,1,1] (다 다른 어딘가에 있음)
+        // 몇동 몇호처럼 찾아가는 개념이라 임의접근은 빠름
+        // 대신 작은 집끼리는 나름의 규칙이 있어서 삽입, 삭제는 느림
+        // 근데 웃긴게 몇 앞에 넣는건 맨 앞에 아파트 새로 지으면 되서 그건 빠름
+        // 앞뒤에서 밀어넣을 수 있다고 해서 더블 큐를 줄여서 deque가 된 거다.
+    }
+
+    void Map() // 이새기는 걍 딕셔너리임 ㅋㅋ
+    {
+        // 균형 이진트리 사용
     }
 };
 
