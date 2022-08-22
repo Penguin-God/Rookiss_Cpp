@@ -441,6 +441,30 @@ public:
     }
 };
 
+class MondernCpp
+{
+    void R_Value(Knights&& knight) // &&는 이중 포인터마냥 잠조의 잠조가 아니라 오른값 참조라는 뜻임
+    {
+        // rValue는 임시 값으로 어차피 사라질 놈임. 즉 인자값으로 넘어온 값은 이 함수 내에서 사용하고 장렬히 사망할 거라는 뜻
+        // 장점 : 복사할 때 메모리 아낄 수 있음
+        // 서로가 독립된 객체임을 보장하고 싶다면 깊은 복사를 하는게 맞다.
+        // 근데 넘어오는 놈이 어차피 죽을 놈이라면 걍 얕은 복사를 하고 인자값을 nullptr같은 걸로 밀어서 소멸자의 delete가 발동되지 않도록 하면?
+        // 말 그대로 도둑질이 가능해짐
+    }
+
+    void SmartPointer()
+    {
+        // 스마트 포인터 : 야수의 심장을 가진 사람마냥 포인터를 직접 관리하는게 아니라 정책에 따라 관리해주는 객체
+        // shared_ptr, weak_ptr, unique_ptr
+        // shared_ptr : 걍 가비지 컬랙터임 ㅋㅋ
+        shared_ptr<Knights> sp = make_shared<Knights>();
+
+        // weak_ptr : 참조 카운트에 영향을 주지 않음. 서로 참조할 경우 메모리 누수 해결 가능. 벗 shared_ptr를 래핑해서 사용한 거라 타이핑을 좀 더 해야됨.
+
+        // unique_ptr : 나만 특정 포인터를 참조할 수 있음. 즉 복사가 막힌 포인터
+    }
+};
+
 int main()
 {
     srand(time(0)); // 진짜 랜덤값을 얻기 위한 시드값 설정
@@ -457,7 +481,10 @@ int main()
     /*콜백함수<int> call;
     call.Lamda();*/
 
-    STL stl;
+    //STL stl;
     //stl.Vector();
-    stl.List();
+    //stl.List();
+
+    MondernCpp mondernCpp;
+
 }
